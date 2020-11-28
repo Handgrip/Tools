@@ -107,16 +107,17 @@ def Run():
         elif choice == "w":
             Logout()
             time.sleep(1)
-            continue
-        elif not choice.isdigit() or int(choice) > len(USERS) or int(choice) < 1:
+        elif choice == "r":
+            pass
+        elif choice.isdigit() and int(choice) <= len(USERS) and int(choice) >= 1:
+            choice = int(choice) - 1
+            Logout()
+            time.sleep(1)
+            Login(*USERS[choice])
+            time.sleep(2)
+        else:
             print("请输入正确的参数")
             time.sleep(1)
-            continue
-        choice = int(choice) - 1
-        Logout()
-        time.sleep(1)
-        Login(*USERS[choice])
-        time.sleep(2)
 
 
 try:
