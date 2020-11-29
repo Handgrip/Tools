@@ -102,10 +102,7 @@ def TestCookieVaild(cookies):
                        cookies=cookies, timeout=TIMEOUT)
     if DEBUG:
         print(ret.content.decode("utf-8"))
-    if ret.content.decode("utf-8").find(USER) != -1:
-        return True
-    else:
-        return False
+    return ret.content.decode("utf-8").find(USER) != -1
 
 
 def GetPidByGet(cookies):
