@@ -48,10 +48,11 @@ def PrintStatus():
 
 
 def PrintIpInfo():
-    ret = requests.get(url="https://202020.ip138.com",
+    ret = requests.get(url="https://2021.ip138.com",
                        headers=HEADERS, timeout=TIMEOUT)
     ipurl = re.search(
-        r'href="(https://www\.ip138\.com/iplookup\.asp\?ip=[\d\.]*?&action=\d*)"', ret.content.decode("utf-8")).group(1)
+        r'href="(https://www\.ip138\.com.*?action=\d*)"', ret.content.decode("utf-8")).group(1)
+    ipurl = ipurl.replace("&amp;","&")
     ret = requests.get(url=ipurl, headers=HEADERS, timeout=TIMEOUT)
     ipinfo = re.search(r'var ip_result = (.*?);',
                        ret.content.decode("gb2312")).group(1)
@@ -89,6 +90,7 @@ def CleanScreen():
 def PrintMenu():
     for index, item in enumerate(USERS):
         print(f"{index+1}. {item[0]} {item[1]}")
+    print("r. 刷新")
     print("w. 注销")
     print("q. 退出")
     print("")
