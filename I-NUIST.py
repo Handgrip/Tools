@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import requests
 import base64
 import os
@@ -11,6 +13,7 @@ HOST = "10.255.255.13"
 INIT = f"http://{HOST}/index.php/index/init"
 LOGOUT = f"http://{HOST}/index.php/index/logout"
 LOGIN = f"http://{HOST}/index.php/index/login"
+os.environ['no_proxy'] = '*'
 
 HEADERS = {
     "user-agent": r"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36",
@@ -19,9 +22,9 @@ HEADERS = {
 }
 TIMEOUT = 2
 USERS = [
-    ("电信", "18011111111", "111111"),
-    ("移动", "18011111111", "111111"),
-    ("联通", "18011111111", "111111")
+    ("电信", "18000000000", "000000"),
+    ("移动", "18000000000", "000000"),
+    ("联通", "18000000000", "000000")
 ]
 ALTDOMAIN = {
     "电信": "ChinaNet",
@@ -52,7 +55,7 @@ def PrintIpInfo():
                        headers=HEADERS, timeout=TIMEOUT)
     ipurl = re.search(
         r'href="(https://www\.ip138\.com.*?action=\d*)"', ret.content.decode("utf-8")).group(1)
-    ipurl = ipurl.replace("&amp;","&")
+    ipurl = ipurl.replace("&amp;", "&")
     ret = requests.get(url=ipurl, headers=HEADERS, timeout=TIMEOUT)
     ipinfo = re.search(r'var ip_result = (.*?);',
                        ret.content.decode("gb2312")).group(1)

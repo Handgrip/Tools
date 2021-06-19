@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from config import *
 import subprocess
+import traceback
 import sys
 import os
 import re
@@ -116,7 +117,7 @@ def Run(Max_Connection):
         if DEBUG:
             print(whiteList)
     ret = system(
-        "netstat -ntu | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -nr")
+        "netstat -ntu | tail -n+3 | awk '{print $5}' | grep -v :: | cut -d: -f1 | sort | uniq -c | sort -nr")
     print(ret[1])
     for line in ret[1].split("\n"):
         [connection, ip] = line.split()
@@ -175,7 +176,8 @@ if __name__ == "__main__":
             exit()
         Run(MAX_CONNECTION)
     except Exception as e:
-        AddLog(repr(e))
+        s = traceback.format_exc()
+        AddLog(s)
         SendMail(f"在主机 {LOCAL_NAME} 上执行 {SCRIPT_NAME} 时发生错误",
-                 f"在主机 {LOCAL_NAME} 上执行 {SCRIPT_NAME} 时发生错误，错误内容如下\n{repr(e)}")
+                 f"在主机 {LOCAL_NAME} 上执行 {SCRIPT_NAME} 时发生错误，错误内容如下\n{s}")
         raise e
