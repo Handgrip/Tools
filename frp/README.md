@@ -1,5 +1,5 @@
 ### frp
-<https://www.nd.fyi/index.php/2020/08/nginx-ssh-frp/>
+<https://blog.ssst.top/post/nginx-ssh-intranet-penetration>
 
 ### webssh
 `pip3 install webssh`
