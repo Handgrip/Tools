@@ -53,7 +53,10 @@ def CheckIpFormat(ip):
     if DEBUG:
         print(r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
     if len(ip) < 7 or not re.match(r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", ip):
-        raise Exception("请输入正确的 ip")
+        print(ip + " 不合法，请输入正确的 ip")
+        return False
+    else:
+        return True
 
 
 def CheckIpset():
@@ -85,7 +88,11 @@ def RemoveCron():
 def AddCron():
     with open(CRON_FOLDER + CRON_NAME, "wb") as fo:
         fo.write(CRON_CONTENT.encode("utf-8"))
-    system(f"{SERVICE} crond restart")
+    system(f"{SERVICE} cron restart")
+
+
+def SaveIpset():
+    system(f"{IPSET} save {IPSET_NAME} -file {SCRIPT_FOLDER}{IPSET_SAVE_NAME}")
 
 
 def ReleaseIp(ip):
@@ -120,6 +127,8 @@ def Run(Max_Connection):
         "netstat -ntu | tail -n+3 | awk '{print $5}' | grep -v :: | cut -d: -f1 | sort | uniq -c | sort -nr")
     print(ret[1])
     for line in ret[1].split("\n"):
+        if len(line.strip()) == 0:
+            continue
         [connection, ip] = line.split()
         connection = int(connection)
         if connection >= Max_Connection:
@@ -140,29 +149,32 @@ def Run(Max_Connection):
                     time.sleep(5)
                     continue
                 system(cmd)
-        system(f"{IPSET} save {IPSET_NAME} -file {SCRIPT_FOLDER}{IPSET_SAVE_NAME}")
+        SaveIpset()
         SendMail(f"在主机 {LOCAL_NAME} 上发现 CC 攻击",
                  f"在主机 {LOCAL_NAME} 上发现 CC 攻击，当前阈值 {Max_Connection}，以下攻击 IP 已屏蔽：\n"+"\n".join(mailList))
 
 
 if __name__ == "__main__":
+    if os.geteuid() != 0:
+        print("This program must be run as root. Aborting.")
+        exit(1)
     try:
         if len(sys.argv) > 1:
             argv = sys.argv[1]
             if argv == "rel":
                 if len(sys.argv) <= 2:
                     raise Exception("请输入 ip")
-                CheckIpFormat(sys.argv[2])
-                ReleaseIp(sys.argv[2])
-                system(
-                    f"{IPSET} save {IPSET_NAME} -file {SCRIPT_FOLDER}{IPSET_SAVE_NAME}")
+                for ip in sys.argv[2:]:
+                    if CheckIpFormat(ip):
+                        ReleaseIp(ip)
+                SaveIpset()
             elif argv == "ban":
                 if len(sys.argv) <= 2:
                     raise Exception("请输入 ip")
-                CheckIpFormat(sys.argv[2])
-                BanIp(sys.argv[2])
-                system(
-                    f"{IPSET} save {IPSET_NAME} -file {SCRIPT_FOLDER}{IPSET_SAVE_NAME}")
+                for ip in sys.argv[2:]:
+                    if CheckIpFormat(ip):
+                        BanIp(ip)
+                SaveIpset()
             elif argv == "cron":
                 AddCron()
             elif argv == "rmcron":

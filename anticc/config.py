@@ -5,7 +5,7 @@ SCRIPT_NAME = r"anticc.py"
 IPSET_SAVE_NAME = r"save.txt"
 WHITE_LIST = r"whitelist.txt"
 CRON_FOLDER = r"/etc/cron.d/"
-CRON_NAME = r"anticc.cron"
+CRON_NAME = r"anticc"
 LOG_FOLDER = SCRIPT_FOLDER
 LOG_NAME = r"anticc.py.log"
 
